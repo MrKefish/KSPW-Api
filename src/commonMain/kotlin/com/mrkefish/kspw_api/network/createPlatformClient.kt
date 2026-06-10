@@ -10,8 +10,13 @@ import kotlinx.serialization.json.Json
 
 fun createPlatformClient(): HttpClient {
     return HttpClient {
-        install(Logging) { level= LogLevel.ALL }
-        install(ContentNegotiation) { json(json = Json { ignoreUnknownKeys=true }) }
+        expectSuccess = false
+        install(Logging) { level = LogLevel.INFO }
+        install(ContentNegotiation) { 
+            json(Json { 
+                ignoreUnknownKeys = true 
+            }) 
+        }
         install(HttpCache)
     }
 }
