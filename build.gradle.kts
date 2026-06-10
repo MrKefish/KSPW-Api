@@ -9,6 +9,7 @@ group = "com.github.MrKefish"
 version = "1.0.0"
 
 kotlin {
+    jvmToolchain(11)
     jvm()
 
     androidTarget {
