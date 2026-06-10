@@ -3,4 +3,4 @@ jdk:
 before_install:
   - chmod +x gradlew
 install:
-  - ./gradlew :KSPW-Api:publishToMavenLocal -Pgroup=com.github.MrKefish
+  - ./gradlew publishToMavenLocal -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m"
