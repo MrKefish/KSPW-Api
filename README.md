@@ -12,6 +12,7 @@
 	</repositories>
 ```
 2) Добавьте зависимость в pom.xml:
+   VERSION замените на последний стабильный релиз
 ```
 <dependency>
 	    <groupId>com.github.MrKefish</groupId>
