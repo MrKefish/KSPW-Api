@@ -11,8 +11,8 @@
 		</repository>
 	</repositories>
 ```
-2) Добавьте зависимость в pom.xml:
-   VERSION замените на последний стабильный релиз
+2) Добавьте зависимость в pom.xml:  
+   "VERSION замените на последний стабильный релиз"
 ```
 <dependency>
 	    <groupId>com.github.MrKefish</groupId>
@@ -22,7 +22,8 @@
 ```
    
 ## Установка gradle
-1) Добавьте репозиторий в pom.xml:
+1) Добавьте репозиторий в pom.xml:  
+   "VERSION замените на последний стабильный релиз"
 ```
 repositories {
     maven { url = uri("https://jitpack.io") }
