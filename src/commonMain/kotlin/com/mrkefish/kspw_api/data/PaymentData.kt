@@ -17,10 +17,3 @@ data class PaymentItem(
     val price: Int,
     val comment: String? = null
 )
-
-@Serializable
-data class PaymentResponse(
-    val url: String,
-    val code: String? = null,
-    val card: String? = null
-)
