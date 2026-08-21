@@ -36,11 +36,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
         }
 
-        val iosMain by creating {
-            dependencies {
-                implementation(libs.ktor.client.darwin)
-            }
-        }
+
     }
 }
 
