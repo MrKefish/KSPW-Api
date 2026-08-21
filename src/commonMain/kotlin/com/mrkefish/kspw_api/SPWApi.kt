@@ -13,8 +13,12 @@ import io.ktor.http.ContentType
 import io.ktor.http.isSuccess
 import io.ktor.http.contentType
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import kotlin.jvm.JvmStatic
 
 object SpWorldsApi {
     private val client = ApiClient.httpClient
@@ -69,12 +73,11 @@ object SpWorldsApi {
         return safeParse(response)
     }
 
-    suspend fun getName(card: SpCard, discordID: String): Result<String?> {
+    suspend fun getName(card: SpCard, discordID: String): Result<UserResponse> {
         val response = client.get("https://spworlds.ru/api/public/users/$discordID") {
             header("Authorization", card.authHeader)
         }
-        // Парсим UserResponse, но возвращаем String (username)
-        return safeParse<UserResponse, String?>(response) { it.username }
+        return safeParse(response)
     }
 
     suspend fun getCards(card: SpCard, username: String): Result<List<CardResponse>> {
@@ -135,14 +138,38 @@ object SpWorldsApi {
         return safeParse(response)
     }
 
-    // Blocking methods с сохранением строгих типов данных
-    fun getCardInfoBlocking(card: SpCard): Result<BalanceResponse> = runBlocking { getCardInfo(card) }
-    fun getProfileBlocking(card: SpCard): Result<ProfileResponse> = runBlocking { getProfile(card) }
-    fun getNameBlocking(card: SpCard, discordID: String): Result<String?> = runBlocking { getName(card, discordID) }
-    fun getCardsBlocking(card: SpCard, username: String): Result<List<CardResponse>> = runBlocking { getCards(card, username) }
-    fun postTransactionBlocking(card: SpCard, receiver: String, amount: Int, comment: String): Result<TransactionResponse> = runBlocking { postTransaction(card, receiver, amount, comment) }
-    fun postTransactionBlocking(card: SpCard, transaction: TransactionRequest): Result<TransactionResponse> = runBlocking { postTransaction(card, transaction) }
-    fun changeCardWebhookBlocking(card: SpCard, webhookUrl: String): Result<String> = runBlocking { changeCardWebhook(card, webhookUrl) }
-    fun postPaymentBlocking(card: SpCard, items: List<PaymentItem>, redirectUrl: String, webhookUrl: String, data: String): Result<PaymentResponse> = runBlocking { postPayment(card, items, redirectUrl, webhookUrl, data) }
-    fun postPaymentBlocking(card: SpCard, paymentRequest: PaymentRequest): Result<PaymentResponse> = runBlocking { postPayment(card, paymentRequest) }
+    // Sync методы для java через Blocking
+    fun getCardInfoSync(card: SpCard): Result<BalanceResponse> = runBlocking { getCardInfo(card) }
+    fun getProfileSync(card: SpCard): Result<ProfileResponse> = runBlocking { getProfile(card) }
+    fun getNameSync(card: SpCard, discordID: String): Result<UserResponse> = runBlocking { getName(card, discordID) }
+    fun getCardsSync(card: SpCard, username: String): Result<List<CardResponse>> = runBlocking { getCards(card, username) }
+    fun postTransactionSync(card: SpCard, receiver: String, amount: Int, comment: String): Result<TransactionResponse> = runBlocking { postTransaction(card, receiver, amount, comment) }
+    fun postTransactionSync(card: SpCard, transaction: TransactionRequest): Result<TransactionResponse> = runBlocking { postTransaction(card, transaction) }
+    fun changeCardWebhookSync(card: SpCard, webhookUrl: String): Result<String> = runBlocking { changeCardWebhook(card, webhookUrl) }
+    fun postPaymentSync(card: SpCard, items: List<PaymentItem>, redirectUrl: String, webhookUrl: String, data: String): Result<PaymentResponse> = runBlocking { postPayment(card, items, redirectUrl, webhookUrl, data) }
+    fun postPaymentSync(card: SpCard, paymentRequest: PaymentRequest): Result<PaymentResponse> = runBlocking { postPayment(card, paymentRequest) }
+
+
+    private val apiScope = CoroutineScope(Dispatchers.Default)
+
+    private fun <T> Result<T>.toCallback(callback: SpCallback<T>) {
+        this.onSuccess { callback.onSuccess(it) }
+            .onFailure { callback.onError(it) }
+    }
+
+    // Async методы для Java через Callback
+    @JvmStatic fun getCardInfoAsync(card: SpCard, callback: SpCallback<BalanceResponse>) = apiScope.launch { getCardInfo(card).toCallback(callback) }
+    @JvmStatic fun getProfileAsync(card: SpCard, callback: SpCallback<ProfileResponse>) = apiScope.launch { getProfile(card).toCallback(callback) }
+    @JvmStatic fun getNameAsync(card: SpCard, discordID: String, callback: SpCallback<UserResponse>) = apiScope.launch { getName(card, discordID).toCallback(callback) }
+    @JvmStatic fun getCardsAsync(card: SpCard, username: String, callback: SpCallback<List<CardResponse>>) = apiScope.launch { getCards(card, username).toCallback(callback) }
+    @JvmStatic fun postTransactionAsync(card: SpCard, receiver: String, amount: Int, comment: String, callback: SpCallback<TransactionResponse>) = apiScope.launch { postTransaction(card, receiver, amount, comment).toCallback(callback) }
+    @JvmStatic fun postTransactionAsync(card: SpCard, transaction: TransactionRequest, callback: SpCallback<TransactionResponse>) = apiScope.launch { postTransaction(card, transaction).toCallback(callback) }
+    @JvmStatic fun changeCardWebhookAsync(card: SpCard, webhookUrl: String, callback: SpCallback<String>) = apiScope.launch { changeCardWebhook(card, webhookUrl).toCallback(callback) }
+    @JvmStatic fun postPaymentAsync(card: SpCard, items: List<PaymentItem>, redirectUrl: String, webhookUrl: String, data: String, callback: SpCallback<PaymentResponse>) = apiScope.launch { postPayment(card, items, redirectUrl, webhookUrl, data).toCallback(callback) }
+    @JvmStatic fun postPaymentAsync(card: SpCard, paymentRequest: PaymentRequest, callback: SpCallback<PaymentResponse>) = apiScope.launch { postPayment(card, paymentRequest).toCallback(callback) }
+}
+
+interface SpCallback<T> {
+    fun onSuccess(result: T)
+    fun onError(error: Throwable)
 }
