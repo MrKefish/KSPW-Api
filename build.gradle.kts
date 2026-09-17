@@ -2,11 +2,11 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlin.serialization)
-    id("maven-publish")
+    id("com.vanniktech.maven.publish") version "0.29.0"
 }
 
-group = "com.github.MrKefish"
-version = "1.1.3"
+group = "io.github.mrkefish"
+version = "1.2.0"
 
 kotlin {
     jvmToolchain(11)
@@ -35,6 +35,9 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.kotlinx.coroutines.android)
         }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
 
 
     }
@@ -50,4 +53,37 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+}
+
+mavenPublishing {
+    coordinates(group.toString(), "kspw-api", version.toString())
+
+    pom {
+        name.set("KSPW API")
+        description.set("Kotlin Multiplatform, Java and Kotlin library for SpWorlds API")
+
+            url.set("https://github.com/MrKefish/KSPW-Api")
+            licenses {
+                license {
+                    name.set("The Apache License, Version 2.0")
+                    url.set("http://apache.org")
+                }
+            }
+            developers {
+                developer {
+                    id.set("mrkefish")
+                    name.set("mrkefish")
+                    email.set("141611735+MrKefish@users.noreply.github.com")
+                }
+            }
+            scm {
+                connection.set("scm:git:://github.com")
+                developerConnection.set("scm:git:ssh://://github.com")
+                url.set("https://github.com/MrKefish/KSPW-Api")
+            }
+        }
+
+
+    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 }
