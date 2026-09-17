@@ -45,7 +45,8 @@ object SpWorldsApi {
     }
 
     // Вспомогательный метод для безопасного получения текста из POST/PUT запросов
-    private suspend fun safeText(response: HttpResponse): Result<String> {
+    private suspend fun safeText(response: HttpResponse): Result<String>   {
+
         return if (response.status.isSuccess()) {
             try {
                 Result.success(response.bodyAsText())
@@ -60,58 +61,100 @@ object SpWorldsApi {
     }
 
     suspend fun getCardInfo(card: SpCard): Result<BalanceResponse> {
+        try {
         val response = client.get("https://spworlds.ru/api/public/card") {
             header("Authorization", card.authHeader)
         }
         return safeParse(response)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     suspend fun getProfile(card: SpCard): Result<ProfileResponse> {
+        try {
         val response = client.get("https://spworlds.ru/api/public/accounts/me") {
             header("Authorization", card.authHeader)
         }
         return safeParse(response)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     suspend fun getName(card: SpCard, discordID: String): Result<UserResponse> {
+        try {
         val response = client.get("https://spworlds.ru/api/public/users/$discordID") {
             header("Authorization", card.authHeader)
         }
         return safeParse(response)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     suspend fun getCards(card: SpCard, username: String): Result<List<CardResponse>> {
+        try {
         val response = client.get("https://spworlds.ru/api/public/accounts/$username/cards") {
             header("Authorization", card.authHeader)
         }
         return safeParse(response)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     suspend fun postTransaction(card: SpCard, receiver: String, amount: Int, comment: String): Result<TransactionResponse> {
+        try {
         val response = client.post("https://spworlds.ru/api/public/transactions") {
             header("Authorization", card.authHeader)
             contentType(ContentType.Application.Json)
             setBody(TransactionRequest(receiver, amount, comment))
         }
         return safeParse(response)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     suspend fun postTransaction(card: SpCard, transaction: TransactionRequest): Result<TransactionResponse> {
+        try {
         val response = client.post("https://spworlds.ru/api/public/transactions") {
             header("Authorization", card.authHeader)
             contentType(ContentType.Application.Json)
             setBody(transaction)
         }
         return safeParse(response)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     suspend fun changeCardWebhook(card: SpCard, webhookUrl: String): Result<String> {
+        try {
         val response = client.put("https://spworlds.ru/api/public/card/webhook") {
             header("Authorization", card.authHeader)
             contentType(ContentType.Application.Json)
             setBody(WebHook(url = webhookUrl))
         }
         return safeText(response)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     suspend fun postPayment(
@@ -121,21 +164,33 @@ object SpWorldsApi {
         webhookUrl: String,
         data: String
     ): Result<PaymentResponse> {
+        try {
         val response = client.post("https://spworlds.ru/api/public/payments") {
             header("Authorization", card.authHeader)
             contentType(ContentType.Application.Json)
             setBody(PaymentRequest(items, redirectUrl, webhookUrl, data))
         }
         return safeParse(response)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     suspend fun postPayment(card: SpCard, paymentRequest: PaymentRequest): Result<PaymentResponse> {
+        try {
         val response = client.post("https://spworlds.ru/api/public/payments") {
             header("Authorization", card.authHeader)
             contentType(ContentType.Application.Json)
             setBody(paymentRequest)
         }
         return safeParse(response)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     // Sync методы для java через Blocking
