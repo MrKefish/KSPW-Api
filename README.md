@@ -5,34 +5,35 @@
 1) Добавьте репозиторий в pom.xml:
 ```
 <repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
+    <repository>
+        <id>central</id>
+        <url>https://apache.org</url>
+    </repository>
+</repositories>
 ```
 2) Добавьте зависимость в pom.xml:  
    "VERSION замените на последний стабильный релиз"
 ```
 <dependency>
-	    <groupId>com.github.MrKefish</groupId>
-	    <artifactId>KSPW-Api</artifactId>
-	    <version>VERSION</version>
-	</dependency>
+    <groupId>io.github.mrkefish</groupId>
+    <artifactId>kspw-api</artifactId>
+    <version>VERSION</version>
+</dependency>
+
 ```
    
 ## Установка gradle
 1) Добавьте репозиторий в pom.xml:  
-   "VERSION замените на последний стабильный релиз"
 ```
 repositories {
-    maven { url = uri("https://jitpack.io") }
+    mavenCentral()
 }
 ```
-2) Добавьте зависимость в pom.xml:
+2) Добавьте зависимость в pom.xml:  
+   "VERSION замените на последний стабильный релиз"
 ```
 dependencies {
-    implementation("com.github.MrKefish.KSPW-Api:KSPW-Api:1.0.0")
+	implementation("io.github.mrkefish:kspw-api:VERSION")
 }
 ```
 ---
@@ -43,24 +44,45 @@ dependencies {
 val yourCard = SpCard(id = "YOUR_ID", token = "YOUR_TOKEN")
 ```
 Теперь вы можете пользоваться методами в SpWorldsApi.  
-Пример на kotlin:
-```
+Пример на kotlin из coroutine контекста:
+```kotlin
 val cardMain = SpCard(id = "YOUR_ID", token = "YOUR_TOKEN")
-try {
-    val balance1 = SpWorldsApi.getBalance(cardMain)
-    val profile = SpWorldsApi.getProfile(cardMain)
-    val name = SpWorldsApi.getName(cardMain, "733184856489721896")
-    val cards = SpWorldsApi.getCards(cardMain, "MrKefish")
-    val transactionResult = SpWorldsApi.postTransaction(cardMain, "92550", 1, "Тестирование библиотеки")
-    val webHookResult = SpWorldsApi.changeCardWebhook(cardMain, "example.org")
 
-    println("Баланс: $balance1")
-    println("Игрок: $profile")
-    println("Имя: $name")
-    println("Карты: $cards")
-    println("Операция: $transactionResult")
-    println("Webhook: $webHookResult")
-    } catch (e: Exception) {
-        println("Ошибка сети: ${e.message}")
-    }
+val cardInfo = SpWorldsApi.getCardInfo(cardMain)
+val profile = SpWorldsApi.getProfile(cardMain)
+val name = SpWorldsApi.getName(cardMain, "733184856489721896")
+val cards = SpWorldsApi.getCards(cardMain, "MrKefish")
+val transactionResult = SpWorldsApi.postTransaction(cardMain, "92550", 1, "Тестирование библиотеки")
+val webHookResult = SpWorldsApi.changeCardWebhook(cardMain, "example.org")
+
+profile.fold(
+	onSuccess = { response -> /*Ваш "K" код*/},
+	onFailure = {exception -> /*Ваш кот(лин) 🐈‍⬛*/}
+)
+```
+Пример на java:  
+
+```java
+
+SpCard cardMain = new SpCard("YOUR_ID", "YOUR_TOKEN");
+
+SpWorldsApi.getCardInfoAsync(cardMain,  new SpCallback<BalanceResponse>() {
+	@Override
+	public void onSuccess(BalanceResponse balanceResponse) {
+		// Ваш ☕ код
+	}
+	@Override
+	public void onError(@NotNull Throwable throwable) {
+		// Ваш кот 🐈
+	}
+});
+
+Result<ProfileResponse> profileResult = SpWorldsApi.getProfileSync(cardMain);
+
+if (profileResult.isSuccess()) {
+  // Ваш ☕ код
+} else {
+  // Ваш кот 🐈
+} 
+
 ```
