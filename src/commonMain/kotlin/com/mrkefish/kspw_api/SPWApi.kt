@@ -39,12 +39,10 @@ object SpWorldsApi {
         }
     }
 
-    // Перегрузка для случаев, когда трансформация не нужна (T == R)
     private suspend inline fun <reified T> safeParse(response: HttpResponse): Result<T> {
         return safeParse<T, T>(response) { it }
     }
 
-    // Вспомогательный метод для безопасного получения текста из POST/PUT запросов
     private suspend fun safeText(response: HttpResponse): Result<String>   {
 
         return if (response.status.isSuccess()) {
