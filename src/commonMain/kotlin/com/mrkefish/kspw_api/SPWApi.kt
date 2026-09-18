@@ -194,15 +194,15 @@ object SpWorldsApi {
     }
 
     // Sync методы для java через Blocking
-    fun getCardInfoSync(card: SpCard): Result<BalanceResponse> = runBlocking { getCardInfo(card) }
-    fun getProfileSync(card: SpCard): Result<ProfileResponse> = runBlocking { getProfile(card) }
-    fun getNameSync(card: SpCard, discordID: String): Result<UserResponse> = runBlocking { getName(card, discordID) }
-    fun getCardsSync(card: SpCard, username: String): Result<List<CardResponse>> = runBlocking { getCards(card, username) }
-    fun postTransactionSync(card: SpCard, receiver: String, amount: Int, comment: String): Result<TransactionResponse> = runBlocking { postTransaction(card, receiver, amount, comment) }
-    fun postTransactionSync(card: SpCard, transaction: TransactionRequest): Result<TransactionResponse> = runBlocking { postTransaction(card, transaction) }
-    fun changeCardWebhookSync(card: SpCard, webhookUrl: String): Result<String> = runBlocking { changeCardWebhook(card, webhookUrl) }
-    fun postPaymentSync(card: SpCard, items: List<PaymentItem>, redirectUrl: String, webhookUrl: String, data: String): Result<PaymentResponse> = runBlocking { postPayment(card, items, redirectUrl, webhookUrl, data) }
-    fun postPaymentSync(card: SpCard, paymentRequest: PaymentRequest): Result<PaymentResponse> = runBlocking { postPayment(card, paymentRequest) }
+    @JvmStatic fun getCardInfoSync(card: SpCard): Result<BalanceResponse> = runBlocking { getCardInfo(card) }
+    @JvmStatic fun getProfileSync(card: SpCard): Result<ProfileResponse> = runBlocking { getProfile(card) }
+    @JvmStatic fun getNameSync(card: SpCard, discordID: String): Result<UserResponse> = runBlocking { getName(card, discordID) }
+    @JvmStatic fun getCardsSync(card: SpCard, username: String): Result<List<CardResponse>> = runBlocking { getCards(card, username) }
+    @JvmStatic fun postTransactionSync(card: SpCard, receiver: String, amount: Int, comment: String): Result<TransactionResponse> = runBlocking { postTransaction(card, receiver, amount, comment) }
+    @JvmStatic fun postTransactionSync(card: SpCard, transaction: TransactionRequest): Result<TransactionResponse> = runBlocking { postTransaction(card, transaction) }
+    @JvmStatic fun changeCardWebhookSync(card: SpCard, webhookUrl: String): Result<String> = runBlocking { changeCardWebhook(card, webhookUrl) }
+    @JvmStatic fun postPaymentSync(card: SpCard, items: List<PaymentItem>, redirectUrl: String, webhookUrl: String, data: String): Result<PaymentResponse> = runBlocking { postPayment(card, items, redirectUrl, webhookUrl, data) }
+    @JvmStatic fun postPaymentSync(card: SpCard, paymentRequest: PaymentRequest): Result<PaymentResponse> = runBlocking { postPayment(card, paymentRequest) }
 
 
     private val apiScope = CoroutineScope(Dispatchers.Default)
