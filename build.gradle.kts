@@ -87,3 +87,15 @@ mavenPublishing {
     publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 }
+
+extensions.configure<SigningExtension> {
+    val signingKey = providers.environmentVariable("ORG_GRADLE_PROJECT_signingKey").orNull
+    val signingKeyId = providers.environmentVariable("ORG_GRADLE_PROJECT_signingKeyId").orNull
+    val signingPassword = providers.environmentVariable("ORG_GRADLE_PROJECT_signingPassword").orNull
+
+    if (signingKey != null) {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    }
+
+    sign(publishing.publications)
+}
